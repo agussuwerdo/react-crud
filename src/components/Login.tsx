@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login as apiLogin } from "../services/api";
 import { login as authLogin, getUser } from "../helpers/authHelper";
-import { Form, Button, Container, Alert } from "react-bootstrap";
+import { Form, Button, Container, Alert, Spinner } from "react-bootstrap";
 
 interface LoginProps {
   onLogin: (user: { username: string }) => void;
@@ -13,11 +13,20 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false); // New loading state
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null); // Reset error state
+
+    // Validation for empty fields
+    if (!username || !password) {
+      setError("Please enter both username and password");
+      return;
+    }
+  
+    setLoading(true); // Start loading
     try {
       const token = await apiLogin(username, password);
       authLogin(token);
@@ -27,7 +36,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       }
       navigate("/");
     } catch (error) {
-      setError("Error logging in" + error);
+      setError("Error logging in: " + (error as Error).message);
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -56,8 +67,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit">
-          Login
+        <Button variant="primary" type="submit" disabled={loading}>
+          {loading ? (
+            <>
+              <Spinner animation="border" size="sm" /> Loading...
+            </>
+          ) : (
+            "Login"
+          )}
         </Button>
       </Form>
     </Container>
