@@ -1,26 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// src/App.tsx
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import ListItems from "./components/ListItems";
+import Login from "./components/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
+import {
+  getUser,
+  isAuthenticated,
+  logout as authLogout,
+} from "./helpers/authHelper";
+import { Button } from "react-bootstrap";
 
-function App() {
+const App: React.FC = () => {
+  const [user, setUser] = useState<{ username: string } | null>(null);
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      setUser(getUser());
+    }
+  }, []);
+
+  const handleLogout = () => {
+    authLogout();
+    setUser(null);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <h1>CRUD Application</h1>
+        {user && (
+          <div>
+            <h2>Welcome, {user.username}</h2>
+            <Button onClick={handleLogout} variant="outline-danger">
+              Logout
+            </Button>
+          </div>
+        )}
+        <Routes>
+          <Route path="/login" element={<Login onLogin={setUser} />} />
+          <Route path="/" element={<ProtectedRoute element={ListItems} />} />
+        </Routes>
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;
