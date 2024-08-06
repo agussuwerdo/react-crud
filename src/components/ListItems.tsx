@@ -26,14 +26,14 @@ const ListItems: React.FC = () => {
     totalPages: 0,
   });
 
-  const fetchAfterAddOrDelete = (numb:number) => {
-    const lastPage = Math.ceil((numb) / limit);
+  const fetchAfterAddOrDelete = (numb: number) => {
+    const lastPage = Math.ceil(numb / limit);
     if (lastPage === pagination.page) {
       fetchItems();
     } else {
       setPage(lastPage); // Redirect to the last page
     }
-  }
+  };
 
   const fetchItems = async () => {
     setLoading(true);
@@ -72,6 +72,12 @@ const ListItems: React.FC = () => {
                 onChange={(e) => {
                   name = e.target.value;
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    Swal.clickConfirm();
+                  }
+                }}
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -81,6 +87,12 @@ const ListItems: React.FC = () => {
                 placeholder="Product Price"
                 onChange={(e) => {
                   price = parseFloat(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    Swal.clickConfirm();
+                  }
                 }}
               />
             </Form.Group>
@@ -119,7 +131,6 @@ const ListItems: React.FC = () => {
       });
     }
   };
-
   const handleEdit = async (id: string) => {
     const MySwal = withReactContent(Swal);
     const item = pagination.items.find((data) => data.id === id);
@@ -136,7 +147,7 @@ const ListItems: React.FC = () => {
       title: "Update Product",
       html: (
         <>
-          <Form className="text-start">
+          <Form id="editForm" className="text-start">
             <Form.Group className="mb-3">
               <Form.Label>Name</Form.Label>
               <Form.Control
@@ -145,6 +156,12 @@ const ListItems: React.FC = () => {
                 defaultValue={item.name}
                 onChange={(e) => {
                   name = e.target.value;
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    Swal.clickConfirm();
+                  }
                 }}
               />
             </Form.Group>
@@ -156,6 +173,12 @@ const ListItems: React.FC = () => {
                 defaultValue={item.price}
                 onChange={(e) => {
                   price = parseFloat(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    Swal.clickConfirm();
+                  }
                 }}
               />
             </Form.Group>
@@ -169,7 +192,7 @@ const ListItems: React.FC = () => {
       confirmButtonText: "Update",
       showLoaderOnConfirm: true,
       preConfirm: async () => {
-        if (!name || isNaN(price)) {
+        if (!name || isNaN(price) || price <= 0) {
           Swal.showValidationMessage(
             "Please enter both name and a valid price"
           );
@@ -238,7 +261,7 @@ const ListItems: React.FC = () => {
         </div>
       ) : (
         <>
-          <Table striped bordered hover>
+          <Table striped bordered hover size="sm" responsive>
             <thead>
               <tr>
                 <th>#</th>

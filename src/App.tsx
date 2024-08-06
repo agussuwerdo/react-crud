@@ -9,7 +9,8 @@ import {
   isAuthenticated,
   logout as authLogout,
 } from "./helpers/authHelper";
-import { Button } from "react-bootstrap";
+import { Button, Container, Row, Col } from "react-bootstrap";
+import Swal from "sweetalert2";
 
 const App: React.FC = () => {
   const [user, setUser] = useState<{ username: string } | null>(null);
@@ -21,28 +22,46 @@ const App: React.FC = () => {
   }, []);
 
   const handleLogout = () => {
-    authLogout();
-    setUser(null);
+    Swal.fire({
+      title: "logout App?",
+      icon: "warning",
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        authLogout();
+        setUser(null);
+      }
+    });
   };
 
   return (
-    <Router>
-      <div>
-        <h1>CRUD Application</h1>
-        {user && (
-          <div>
-            <h2>Welcome, {user.username}</h2>
-            <Button onClick={handleLogout} variant="outline-danger">
-              Logout
-            </Button>
-          </div>
-        )}
-        <Routes>
-          <Route path="/login" element={<Login onLogin={setUser} />} />
-          <Route path="/" element={<ProtectedRoute element={ListItems} />} />
-        </Routes>
-      </div>
-    </Router>
+    <Container>
+      <Router>
+        <div>
+          <Row>
+            <Col>
+              <h1>CRUD Application</h1>
+            </Col>
+            <Col className="pull-right">
+              {user && (
+                <Row>
+                  <h2 className="text-end">Welcome, {user.username}</h2>
+                  <div className="text-end">
+                    <Button onClick={handleLogout} variant="outline-danger">
+                      Logout
+                    </Button>
+                  </div>
+                </Row>
+              )}
+            </Col>
+          </Row>
+          <Routes>
+            <Route path="/login" element={<Login onLogin={setUser} />} />
+            <Route path="/" element={<ProtectedRoute element={ListItems} />} />
+          </Routes>
+        </div>
+      </Router>
+    </Container>
   );
 };
 
