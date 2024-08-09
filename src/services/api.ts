@@ -45,3 +45,7 @@ const token = getToken();
 if (token) {
   setToken(token);
 }
+
+export const register = async (email: string, password: string) => {
+  // Implement registration API call here
+};

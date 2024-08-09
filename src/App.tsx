@@ -11,6 +11,7 @@ import {
 } from "./helpers/authHelper";
 import { Button, Container, Row, Col } from "react-bootstrap";
 import Swal from "sweetalert2";
+import Register from "./components/Register";
 
 const App: React.FC = () => {
   const [user, setUser] = useState<{ username: string } | null>(null);
@@ -57,6 +58,7 @@ const App: React.FC = () => {
           </Row>
           <Routes>
             <Route path="/login" element={<Login onLogin={setUser} />} />
+            <Route path="/register" element={<Register onRegister={()=>{}} />} />
             <Route path="/" element={<ProtectedRoute element={ListItems} />} />
           </Routes>
         </div>
