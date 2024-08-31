@@ -59,8 +59,8 @@ jobs:
       - run:
           name: Send Slack Notification
           command: |
-            APP_NAME=$(jq -r .name package.json)
-            VERSION=$(jq -r .version package.json)
+            APP_NAME=$(cat package.json | grep '"name"' | head -n 1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            VERSION=$(cat package.json | grep '"version"' | head -n 1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')
             curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Deployment of \`${APP_NAME}\`, version \`${VERSION}\` is complete.\"}" $SLACK_WEBHOOK_URL
 
 workflows:
