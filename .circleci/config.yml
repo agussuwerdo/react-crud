@@ -59,7 +59,9 @@ jobs:
       - run:
           name: Send Slack Notification
           command: |
-            curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Deployment to Vercel is complete.\"}" $SLACK_WEBHOOK_URL
+            APP_NAME=$(jq -r .name package.json)
+            VERSION=$(jq -r .version package.json)
+            curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Deployment of \`${APP_NAME}\`, version \`${VERSION}\` is complete.\"}" $SLACK_WEBHOOK_URL
 
 workflows:
   test-build-and-deploy:
