@@ -12,7 +12,7 @@ jobs:
       - node/install-packages:
           pkg-manager: npm
       - run:
-          name: Run tests
+          name: Run lint
           command: npm run lint
 
   build-node:
@@ -56,6 +56,13 @@ jobs:
   notify-slack:
     executor: node/default
     steps:
+      - checkout
+      - run:
+          name: Debug - Print working directory
+          command: pwd
+      - run:
+          name: Debug - List directory contents
+          command: ls -al
       - run:
           name: Send Slack Notification
           command: |
