@@ -60,6 +60,16 @@ workflows:
       - build-node:
           requires:
             - test-node
+          filters:
+            branches:
+              only:
+                - main
+                - master
       - deploy-vercel:
           requires:
             - build-node
+          filters:
+            branches:
+              only:
+                - main
+                - master
