@@ -70,6 +70,15 @@ jobs:
             VERSION=$(cat package.json | grep '"version"' | head -n 1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')
             curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Deployment of \`${APP_NAME}\`, version \`${VERSION}\` is complete.\"}" $SLACK_WEBHOOK_URL
 
+  notify-slack-failure:
+    executor: node/default
+    steps:
+      - run:
+          name: Send Slack Notification for Failure
+          command: |
+            APP_NAME=$(cat package.json | grep '"name"' | head -n 1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"CI for \`${APP_NAME}\` has failed. Please check the logs for details.\"}" $SLACK_WEBHOOK_URL
+
 workflows:
   test-build-and-deploy:
     jobs:
@@ -98,3 +107,7 @@ workflows:
               only:
                 - main
                 - master
+
+  notify-on-failure:
+    jobs:
+      - notify-slack-failure
