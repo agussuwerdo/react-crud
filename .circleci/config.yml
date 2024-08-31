@@ -53,6 +53,14 @@ jobs:
           name: Store Deployment Information
           command: echo "Vercel deployment completed."
 
+  notify-slack:
+    executor: node/default
+    steps:
+      - run:
+          name: Send Slack Notification
+          command: |
+            curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Deployment to Vercel is complete.\"}" $SLACK_WEBHOOK_URL
+
 workflows:
   test-build-and-deploy:
     jobs:
@@ -68,6 +76,14 @@ workflows:
       - deploy-vercel:
           requires:
             - build-node
+          filters:
+            branches:
+              only:
+                - main
+                - master
+      - notify-slack:
+          requires:
+            - deploy-vercel
           filters:
             branches:
               only:

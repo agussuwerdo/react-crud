@@ -12,6 +12,7 @@ import {
 import { Button, Container, Row, Col } from "react-bootstrap";
 import Swal from "sweetalert2";
 import Register from "./components/Register";
+import packageJson from '../package.json';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<{ username: string } | null>(null);
@@ -41,7 +42,7 @@ const App: React.FC = () => {
         <div>
           <Row>
             <Col>
-              <h1>CRUD Application</h1>
+              <h1>CRUD Application ver:{packageJson.version}</h1>
             </Col>
             <Col className="pull-right">
               {user && (
