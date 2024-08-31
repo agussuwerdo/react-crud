@@ -26,13 +26,13 @@ const ListItems: React.FC = () => {
     totalPages: 0,
   });
 
-  const fetchAfterAddOrDelete = (numb: number) => {
+  const fetchAfterAddOrDelete = (numb: number, act = "add" || "delete") => {
     const lastPage = Math.ceil(numb / limit);
-    if (lastPage === pagination.page) {
-      fetchItems();
-    } else {
+    if (act === "add") {
       setPage(lastPage); // Redirect to the last page
+      return;
     }
+    fetchItems();
   };
 
   const fetchItems = async () => {
@@ -114,7 +114,7 @@ const ListItems: React.FC = () => {
         }
         try {
           await createItem({ name, price });
-          fetchAfterAddOrDelete(pagination.totalCount + 1);
+          fetchAfterAddOrDelete(pagination.totalCount + 1, "add");
           return true;
         } catch (error) {
           Swal.showValidationMessage("An error occurred while adding the item");
@@ -231,7 +231,7 @@ const ListItems: React.FC = () => {
       preConfirm: async () => {
         try {
           await deleteItem(id);
-          fetchAfterAddOrDelete(pagination.totalCount - 1);
+          fetchAfterAddOrDelete(pagination.totalCount - 1, "delete");
           return true;
         } catch (error) {
           Swal.showValidationMessage("An error occurred while deleting");
