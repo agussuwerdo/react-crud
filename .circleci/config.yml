@@ -1,0 +1,65 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5
+
+jobs:
+  test-node:
+    # Install node dependencies and run tests
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Run tests
+          command: npm test --passWithNoTests
+
+  build-node:
+    # Build node project
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Build React Project
+          command: npm run build
+      - run:
+          name: Create the ~/artifacts directory if it doesn't exist
+          command: mkdir -p ~/artifacts
+      # Copy output to artifacts dir
+      - run:
+          name: Copy artifacts
+          command: cp -R build ~/artifacts
+      - store_artifacts:
+          path: ~/artifacts
+          destination: react-build
+
+  deploy-vercel:
+    # Deploy to Vercel
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Install Vercel CLI Locally
+          command: npm install vercel
+      - run:
+          name: Deploy to Vercel
+          command: VERCEL_PROJECT_ID=$VERCEL_PROJECT_ID VERCEL_ORG_ID=$VERCEL_ORG_ID ./node_modules/.bin/vercel --token $VERCEL_TOKEN --prod --yes
+      - run:
+          name: Store Deployment Information
+          command: echo "Vercel deployment completed."
+
+workflows:
+  test-build-and-deploy:
+    jobs:
+      - test-node
+      - build-node:
+          requires:
+            - test-node
+      - deploy-vercel:
+          requires:
+            - build-node
